@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💖 15 Tantangan Cinta Untukmu Sayang! 💖</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            background: linear-gradient(to bottom right, #fee2e2, #fbcfe8);
+            overflow-x: hidden;
+        }
+        h1, h2 { font-family: 'Pacifico', cursive; }
+        .heart-fall { 
+            position: fixed; 
+            color: #fca5a5; 
+            font-size: 25px; 
+            animation: fall 10s linear infinite; 
+            opacity: 0.8; 
+            pointer-events: none; 
+            z-index: 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        @keyframes fall {
+            0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0.8; }
+            100% { transform: translateY(110vh) translateX(50px) rotate(720deg); opacity: 0; }
+        }
+        .cute-button {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(252, 165, 165, 0.4);
+        }
+        .cute-button:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 15px rgba(252, 165, 165, 0.6);
+        }
+        .progress-bar { transition: width 0.5s ease-in-out; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <div id="heart-rain-container" class="absolute inset-0"></div>
+
+    <div id="quiz-card" class="bg-white/90 backdrop-blur-md p-6 rounded-3xl shadow-2xl max-w-lg w-full text-center relative z-10 border-4 border-pink-200">
+        
+        <div id="setup-screen">
+            <div class="text-6xl mb-4">🥰</div>
+            <h1 class="text-3xl font-bold text-pink-600 mb-4">Tantangan 15 Pertanyaan Cinta!</h1>
+            <p class="text-gray-700 mb-6 italic">"Seberapa dalam kamu mengenal perjalanan cinta kita? Buktikan di sini ya sayang..."</p>
+            <button onclick="startQuiz()" class="cute-button bg-pink-500 hover:bg-pink-600 text-white font-bold py-4 px-10 rounded-full text-xl">
+                Mulai Sekarang 💖
+            </button>
+        </div>
+
+        <div id="question-screen" class="hidden text-left">
+            <div class="w-full bg-pink-100 rounded-full h-2.5 mb-4">
+                <div id="bar" class="progress-bar bg-pink-500 h-2.5 rounded-full" style="width: 0%"></div>
+            </div>
+            <div class="mb-2 text-pink-400 font-bold text-sm text-center">Soal <span id="current-idx">1</span> dari 15</div>
+            <h2 id="question-text" class="text-xl font-bold text-gray-800 mb-6 text-center"></h2>
+            <div id="options" class="space-y-3"></div>
+        </div>
+
+        <div id="result-screen" class="hidden">
+            <h2 class="text-4xl font-bold text-pink-600 mb-3">Selesai! 🎉</h2>
+            <div class="bg-pink-50 rounded-2xl p-4 mb-6">
+                <p class="text-gray-700 text-lg mb-2">Skor Kamu:</p>
+                <p class="text-5xl font-bold text-pink-500"><span id="final-score">0</span>/15</p>
+            </div>
+            <p id="final-msg" class="text-gray-700 mb-7 text-lg px-4"></p>
+            <p class="italic text-pink-500 font-semibold text-xl mb-4">"I Love You Forever!"</p>
+            <button onclick="location.reload()" class="text-sm text-pink-400 underline">Ulangi Kuis</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { q: "Apa hal pertama yang bikin aku jatuh hati sama kamu?", a: ["Senyum manis kamu", "Cara kamu bicara", "Kebaikan hati kamu", "Mata kamu yang indah"], c: 0 },
+            { q: "Kapan kita pertama kali bener-bener ngobrol lama?", a: ["Pagi hari", "Siang bolong", "Sore santai", "Malam hari sampai begadang"], c: 3 },
+            { q: "Apa warna baju yang aku pakai pas pertama ketemu kamu?", a: ["Hitam", "Putih", "Biru", "Lupa ya?"], c: 1 },
+            { q: "Apa hobi aku yang paling sering aku ceritain ke kamu?", a: ["Main Game", "Denger Musik", "Nonton Film", "Makan"], c: 0 },
+            { q: "Dari semua sifatku, mana yang paling sering bikin kamu sabar?", a: ["Manja", "Cueknya", "Gak sabaran", "Cemburuan"], c: 2 },
+            { q: "Apa makanan yang pengen banget kita makan bareng nanti?", a: ["Steak", "Sushi", "Makanan Pinggir Jalan", "Masakan Rumah"], c: 2 },
+            { q: "Kalau aku lagi sedih, biasanya aku ngapain?", a: ["Tidur", "Cari kamu", "Diem aja", "Denger lagu galau"], c: 1 },
+            { q: "Apa panggilan sayang yang paling kamu suka?", a: ["Sayang", "Beb", "Cinta", "Nama panggilan khusus"], c: 3 },
+            { q: "Siapa yang paling sering minta maaf duluan kalau marahan?", a: ["Aku", "Kamu", "Dua-duanya", "Gak ada yang mau ngalah"], c: 2 },
+            { q: "Apa ketakutan terbesar aku dalam hubungan ini?", a: ["Kehilangan kamu", "Bosen", "Berantem hebat", "LDR"], c: 0 },
+            { q: "Apa lagu yang paling ngingetin aku sama kamu?", a: ["Lagu Romantis", "Lagu Galau", "Lagu Jedag Jedug", "Lagu Kenangan"], c: 0 },
+            { q: "Di mana tempat kencan impian yang pernah aku sebut?", a: ["Pantai", "Gunung", "Luar Negeri", "Cukup di rumah bareng"], c: 3 },
+            { q: "Apa kebiasaan buruk aku yang kamu maklumin banget?", a: ["Pelupa", "Suka telat", "Berantakan", "Suka begadang"], c: 0 },
+            { q: "Apa hal kecil dari kamu yang paling aku kangenin?", a: ["Wangi kamu", "Chat kamu", "Suara kamu", "Semua tentang kamu"], c: 3 },
+            { q: "Terakhir... Seberapa besar sayangku ke kamu?", a: ["Besar", "Besar banget", "Gak bisa diukur", "Tak terhingga dan selamanya"], c: 3 }
+        ];
+
+        let currentIdx = 0;
+        let score = 0;
+
+        function createHeartFall() {
+            const heart = document.createElement('div');
+            heart.innerHTML = '💖';
+            heart.className = 'heart-fall';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.fontSize = (Math.random() * 20 + 15) + 'px';
+            heart.style.animationDuration = (Math.random() * 5 + 5) + 's';
+            document.getElementById('heart-rain-container').appendChild(heart);
+            setTimeout(() => heart.remove(), 10000);
+        }
+        setInterval(createHeartFall, 300);
+
+        function startQuiz() {
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('question-screen').classList.remove('hidden');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = questions[currentIdx];
+            document.getElementById('current-idx').innerText = currentIdx + 1;
+            document.getElementById('question-text').innerText = q.q;
+            document.getElementById('bar').style.width = ((currentIdx / questions.length) * 100) + '%';
+            
+            const optionsDiv = document.getElementById('options');
+            optionsDiv.innerHTML = '';
+            q.a.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full py-3 px-5 rounded-2xl border-2 border-pink-100 bg-white/50 hover:bg-pink-200 transition-all text-gray-800 font-semibold cute-button text-left";
+                btn.innerHTML = `<span class="inline-block w-8 h-8 bg-pink-100 rounded-full text-center mr-3 text-pink-500">${String.fromCharCode(65 + i)}</span> ${opt}`;
+                btn.onclick = () => checkAnswer(i);
+                optionsDiv.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(i) {
+            if(i === questions[currentIdx].c) score++;
+            currentIdx++;
+            if(currentIdx < questions.length) showQuestion();
+            else showResult();
+        }
+
+        function showResult() {
+            document.getElementById('question-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('final-score').innerText = score;
+            
+            let msg = "";
+            if (score === 15) msg = "Sempurna! Kamu emang belahan jiwaku yang paling ngertiin aku. Love you so much! 💖✨";
+            else if (score >= 10) msg = "Hebat banget! Kamu perhatian banget sama detail hubungan kita. Makasih ya sayang... 🥰";
+            else if (score >= 5) msg = "Lumayan lah ya, tapi nanti kita harus lebih banyak cerita bareng lagi biar makin kenal! 💞";
+            else msg = "Gak apa-apa salah banyak, yang penting rasa sayang kita gak pernah salah arah! I love you! ❤️";
+            
+            document.getElementById('final-msg').innerText = msg;
+        }
+    </script>
+</body>
+</html>
